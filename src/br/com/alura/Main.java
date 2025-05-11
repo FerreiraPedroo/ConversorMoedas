@@ -1,7 +1,14 @@
+package br.com.alura;
+
 import br.com.alura.Api.Api;
-import br.com.alura.Api.Conversao;
+import br.com.alura.Api.Conversor;
+import br.com.alura.Log.Log;
+import br.com.alura.Log.Logger;
+
 import com.google.gson.Gson;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,7 +20,9 @@ public class Main {
 	public static void main(String[] args) {
 		Api consultaAPI = new Api();
 		Scanner leitor = new Scanner(System.in);
+		
 		Gson gson = new Gson();
+		Logger logger = new Logger();
 		
 		List<String> listaDeMoedas = new ArrayList<String>(List.of("ARS - Peso argentino", "BOB - Boliviano bolivian", "BRL - Real brasileiro", "CLP - Peso chileno", "COP - Peso colombiano", "USD - Dólar americano"));
 		
@@ -30,17 +39,19 @@ public class Main {
 		System.out.println("‖                                                ‖");
 		System.out.println("╚════════════════════════════════════════════════╝");
 		
-		
 		while (ponteiro >= 0) {
 			
 			switch (ponteiro) {
 				// MENU PRINCIPAL
 				case 0:
 					System.out.println("╔════════════════════════════════════════════════╗");
+					System.out.println("‖                 MENU PRINCIPAL                 ‖");
+					System.out.println("‖════════════════════════════════════════════════‖");
 					System.out.println("‖   SELECIONE UMA OPÇÃO                          ‖");
 					System.out.println("‖                                                ‖");
 					System.out.println("‖    1: Moedas disponíveis                       ‖");
 					System.out.println("‖    2: Converter moeda                          ‖");
+					System.out.println("‖    3: Registro                                 ‖");
 					System.out.println("‖                                                ‖");
 					System.out.println("‖    0: Sair                                     ‖");
 					System.out.println("‖                                                ‖");
@@ -59,6 +70,7 @@ public class Main {
 							break;
 						case 1:
 						case 2:
+						case 3:
 							break;
 						default:
 							System.out.println("╔════════════════════════════════════════════════╗");
@@ -71,7 +83,6 @@ public class Main {
 					}
 					
 					break;
-				
 				
 				case 1:
 					System.out.println("╔════════════════════════════════════════════════╗");
@@ -102,6 +113,7 @@ public class Main {
 							ponteiro = 1;
 							break;
 					}
+					
 					break;
 				
 				// MENU CONVERTER MOEDAS
@@ -162,7 +174,7 @@ public class Main {
 								String complete = caracteresParaCompletar(1, texto.length());
 								System.out.println(texto + complete + "‖");
 							} else {
-								String texto = "‖   " + (i+1) + ": " + listaDeMoedas.get(i);
+								String texto = "‖   " + (i + 1) + ": " + listaDeMoedas.get(i);
 								String complete = caracteresParaCompletar(1, texto.length());
 								System.out.println(texto + complete + "‖");
 							}
@@ -245,7 +257,7 @@ public class Main {
 						String moedaDeDestinoSigla = listaDeMoedas.get(moedaDeDestinoSelecionada).substring(0, 3);
 						
 						String resultado = consultaAPI.consultaMoeda(moedaDeOrigemSigla, moedaDeDestinoSigla);
-						Conversao conversao = gson.fromJson(resultado, Conversao.class);
+						Conversor conversor = gson.fromJson(resultado, Conversor.class);
 						
 						System.out.println("╔════════════════════════════════════════════════╗");
 						System.out.println("‖   CONVERSÃO CONSULTADA                         ‖");
@@ -272,7 +284,7 @@ public class Main {
 						
 						// EXIBE A CONVERSÃO DA MOEDA DE ORIGEM PARA A MOEDA DE DESTINO SELECIONADAS
 						String textoConversao = "‖    1 " + moedaDeOrigemSigla + " = " +
-						Double.parseDouble(conversao.getConversion_rate()) + " " + moedaDeDestinoSigla;
+						Double.parseDouble(conversor.getConversion_rate()) + " " + moedaDeDestinoSigla;
 						String complete = caracteresParaCompletar(1, textoConversao.length());
 						System.out.println(textoConversao + complete + "‖");
 						
@@ -282,11 +294,21 @@ public class Main {
 						System.out.println("‖                                                ‖");
 						System.out.println("╚════════════════════════════════════════════════╝");
 						
+						// SALVAR A CONSULTA NO LOG
+						LocalDateTime dataAgora = LocalDateTime.now();
+						DateTimeFormatter formatoDataHora = DateTimeFormatter.ofPattern("dd/mm/yyyy hh:mm:ss");
+						
+						String dataFormatada = dataAgora.format(formatoDataHora);
+						String registro = "[" + dataFormatada + "] 1 " + moedaDeOrigemSigla + " = " + conversor.getConversion_rate() + " " + moedaDeDestinoSigla;
+						System.out.println(registro);
+						logger.registrarLog(registro);
+						
 						int opcaoSelecionada = leitor.nextInt();
 						
 						switch (opcaoSelecionada) {
 							case 0:
 								ponteiro = 0;
+								ponteiroConverteMoeda = 0;
 								break;
 							case 1:
 								ponteiroConverteMoeda = 1;
@@ -303,15 +325,41 @@ public class Main {
 					}
 					
 					break;
-				case 3:
-					break;
-				case 4:
-					break;
-				case 5:
-					break;
 				
+				// EXIBIR REGISTROS DE CONVERSÃO
+				case 3:
+					String log = logger.carregarLog();
+					
+					System.out.println("╔════════════════════════════════════════════════╗");
+					System.out.println("‖   REGISTRO DE CONSULTAS                        ‖");
+					System.out.println("‖                                                ‖");
+					if (!log.isEmpty()) {
+						Log[] registros = gson.fromJson(log, Log[].class);
+						for (Log registro : registros) {
+							String texto = "‖    " + registro.getRegistro();
+							String complete = caracteresParaCompletar(1, texto.length());
+							System.out.println(texto + complete + "‖");
+						}
+					} else {
+						System.out.println("‖               [SEM REGISTROS]                  ‖");
+					}
+					System.out.println("‖                                                ‖");
+					System.out.println("‖    0: Menu principal                           ‖");
+					System.out.println("‖                                                ‖");
+					System.out.println("╚════════════════════════════════════════════════╝");
+					ponteiro = leitor.nextInt();
+					
+					if (ponteiro != 0) {
+						System.out.println("╔════════════════════════════════════════════════╗");
+						System.out.println("‖                                                ‖");
+						System.out.println("‖   OPÇÃO INVÁLIDA                               ‖");
+						System.out.println("‖                                                ‖");
+						System.out.println("╚════════════════════════════════════════════════╝");
+						ponteiro = 3;
+					}
+					
+					break;
 			}
-			
 			
 		}
 		

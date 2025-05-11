@@ -1,6 +1,6 @@
 package br.com.alura.Api;
 
-public class Conversao {
+public class Conversor {
 	private String result;
 	private String base_code;
 	
