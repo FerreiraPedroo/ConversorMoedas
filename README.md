@@ -7,7 +7,7 @@ O programa que faz a interação com o usuário via console, onde há varias op�
 <br/>
 
 ## Tecnologias utilizadas
-- ``Java 8``
+- ``Java 17``
 - ``InteliJ IDEA``
 
 <br/>
