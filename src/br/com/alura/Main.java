@@ -28,9 +28,11 @@ public class Main {
 		
 		int moedaDeOrigemSelecionada = -1;
 		int moedaDeDestinoSelecionada = -1;
+		double valorParaConverter = 0;
+		
+		int ponteiroConverteMoeda = 1;
 		int ponteiro = 0;
 		
-		System.out.println("##################################################");
 		System.out.println("╔════════════════════════════════════════════════╗");
 		System.out.println("‖                                                ‖");
 		System.out.println("‖    C O N V E R S O R    D E    M O E D A S     ‖");
@@ -118,7 +120,6 @@ public class Main {
 				
 				// MENU CONVERTER MOEDAS
 				case 2:
-					int ponteiroConverteMoeda = 1;
 					
 					// SELECIONAR A MOEDA DE ORIGEM PARA CONVERSÃO
 					while (ponteiroConverteMoeda == 1) {
@@ -203,8 +204,50 @@ public class Main {
 						
 					}
 					
-					// EXIBE AS MOEDAS SELECIONADAS
+					// SELECIONAR A QUANTIDADE PARA SER CONVERTIDO
 					while (ponteiroConverteMoeda == 3) {
+						System.out.println("╔════════════════════════════════════════════════╗");
+						System.out.println("‖   SELECIONE O VALOR A SER CONVERTIDO           ‖");
+						System.out.println("‖                                                ‖");
+						
+						String textoMoedaOrigem = "";
+						String textoMoedaDestino = "";
+						for (int i = 0; i < listaDeMoedas.size(); i++) {
+							if (moedaDeOrigemSelecionada == i) {
+								String texto = "‖    [ORIGEM ] => " + listaDeMoedas.get(i);
+								String complete = caracteresParaCompletar(1, texto.length());
+								textoMoedaOrigem = texto + complete + "‖";
+							} else if (moedaDeDestinoSelecionada == i) {
+								String texto = "‖    [DESTINO] => " + listaDeMoedas.get(i);
+								String complete = caracteresParaCompletar(1, texto.length());
+								textoMoedaDestino = texto + complete + "‖";
+							}
+						}
+						
+						System.out.println(textoMoedaOrigem);
+						System.out.println(textoMoedaDestino);
+						
+						System.out.println("‖                                                ‖");
+						System.out.println("‖   Quanto deseja converter ?                    ‖");
+						System.out.println("‖                                                ‖");
+						System.out.println("‖    0: Voltar                                   ‖");
+						System.out.println("‖                                                ‖");
+						System.out.println("╚════════════════════════════════════════════════╝");
+						
+						double opcaoSelecionada = leitor.nextDouble();
+						
+						if (opcaoSelecionada == 0) {
+							System.out.println("opcaoSelecionada");
+							ponteiroConverteMoeda = 2;
+						} else {
+							valorParaConverter = opcaoSelecionada;
+							ponteiroConverteMoeda = 4;
+						}
+						
+					}
+					
+					// EXIBE AS MOEDAS SELECIONADAS
+					while (ponteiroConverteMoeda == 4) {
 						System.out.println("╔════════════════════════════════════════════════╗");
 						System.out.println("‖   MOEDAS SELECIONADAS                          ‖");
 						System.out.println("‖                                                ‖");
@@ -225,6 +268,10 @@ public class Main {
 						System.out.println(textoMoedaOrigem);
 						System.out.println(textoMoedaDestino);
 						
+						String textoValor = "‖    [VALOR  ] => " + valorParaConverter;
+						String completeValor = caracteresParaCompletar(1, textoValor.length());
+						System.out.println(textoValor + completeValor + "‖");
+						
 						System.out.println("‖                                                ‖");
 						System.out.println("‖    1: Consultar                                ‖");
 						System.out.println("‖    0: Voltar                                   ‖");
@@ -235,10 +282,10 @@ public class Main {
 						
 						switch (opcaoSelecionada) {
 							case 0:
-								ponteiroConverteMoeda = 2;
+								ponteiroConverteMoeda = 3;
 								break;
 							case 1:
-								ponteiroConverteMoeda = 4;
+								ponteiroConverteMoeda = 5;
 								break;
 							default:
 								System.out.println("╔════════════════════════════════════════════════╗");
@@ -252,7 +299,7 @@ public class Main {
 					}
 					
 					// EFETUAR A CONSULTA NA API
-					while (ponteiroConverteMoeda == 4) {
+					while (ponteiroConverteMoeda == 5) {
 						String moedaDeOrigemSigla = listaDeMoedas.get(moedaDeOrigemSelecionada).substring(0, 3);
 						String moedaDeDestinoSigla = listaDeMoedas.get(moedaDeDestinoSelecionada).substring(0, 3);
 						
@@ -262,7 +309,7 @@ public class Main {
 						System.out.println("╔════════════════════════════════════════════════╗");
 						System.out.println("‖   CONVERSÃO CONSULTADA                         ‖");
 						
-						// EXIBE NA ORGEM A MOEDA DE ORIGEM E DESTINO SELEIONADAS
+						// EXIBE NA ORIGEM A MOEDA DE ORIGEM E DESTINO SELEIONADAS
 						String textoMoedaOrigem = "";
 						String textoMoedaDestino = "";
 						for (int i = 0; i < listaDeMoedas.size(); i++) {
@@ -276,6 +323,7 @@ public class Main {
 								textoMoedaDestino = texto + complete + "‖";
 							}
 						}
+						
 						System.out.println(textoMoedaOrigem);
 						System.out.println(textoMoedaDestino);
 						
@@ -289,6 +337,16 @@ public class Main {
 						System.out.println(textoConversao + complete + "‖");
 						
 						System.out.println("‖                                                ‖");
+						System.out.println("‖   VALOR CONVERTIDO                             ‖");
+						
+						// EXIBE A CONVERSÃO DO VALOR SELECIONADO
+						String valorConversao = "‖    " + valorParaConverter + " " + moedaDeOrigemSigla + " = " +
+						Double.parseDouble(conversor.getConversion_rate()) * valorParaConverter + " " + moedaDeDestinoSigla;
+						String valorComplete = caracteresParaCompletar(1, valorConversao.length());
+						
+						System.out.println(valorConversao + valorComplete + "‖");
+						
+						System.out.println("‖                                                ‖");
 						System.out.println("‖    1: Nova consulta                            ‖");
 						System.out.println("‖    0: Menu principal                           ‖");
 						System.out.println("‖                                                ‖");
@@ -299,8 +357,8 @@ public class Main {
 						DateTimeFormatter formatoDataHora = DateTimeFormatter.ofPattern("dd/mm/yyyy hh:mm:ss");
 						
 						String dataFormatada = dataAgora.format(formatoDataHora);
-						String registro = "[" + dataFormatada + "] 1 " + moedaDeOrigemSigla + " = " + conversor.getConversion_rate() + " " + moedaDeDestinoSigla;
-						System.out.println(registro);
+						String registro = "[" + dataFormatada + "] " + valorParaConverter + " " + moedaDeOrigemSigla + " = " + (Double.parseDouble(conversor.getConversion_rate()) * valorParaConverter) + " " + moedaDeDestinoSigla;
+
 						logger.registrarLog(registro);
 						
 						int opcaoSelecionada = leitor.nextInt();
@@ -336,9 +394,14 @@ public class Main {
 					if (!log.isEmpty()) {
 						Log[] registros = gson.fromJson(log, Log[].class);
 						for (Log registro : registros) {
-							String texto = "‖    " + registro.getRegistro();
-							String complete = caracteresParaCompletar(1, texto.length());
-							System.out.println(texto + complete + "‖");
+							String registroData = "‖    " + registro.getRegistroData();
+							String registroDataComplete = caracteresParaCompletar(1, registroData.length());
+							System.out.println(registroData + registroDataComplete + "‖");
+							
+							String registroInfo = "‖    " + registro.getRegistroInfo();
+							String registroInfoComplete = caracteresParaCompletar(1, registroInfo.length());
+							System.out.println(registroInfo + registroInfoComplete + "‖");
+							System.out.println("‖                                                ‖");
 						}
 					} else {
 						System.out.println("‖               [SEM REGISTROS]                  ‖");
@@ -365,10 +428,10 @@ public class Main {
 		
 	}
 	
-	static String caracteresParaCompletar(int caracteresIniciais, int caractereTotal) {
+	static String caracteresParaCompletar(int caracteresFinais, int caractereTotal) {
 		// CALCULA A QUANTIDADE DE CARACTERES DEPOIS DO TEXTO E ANTES DO FINAL
 		// 50 = TOTAL DE CARACTERES NA LINHA
-		int numeroDeCaractereRestante = 50 - (caracteresIniciais + caractereTotal);
+		int numeroDeCaractereRestante = 50 - (caracteresFinais + caractereTotal);
 		
 		if (numeroDeCaractereRestante <= 0) {
 			numeroDeCaractereRestante = 1;

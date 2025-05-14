@@ -23,7 +23,6 @@ public class Logger {
 			
 			if (!log.isEmpty()) {
 				for (Log registro : registrosJson) {
-					System.out.println("AKI OK 0");
 					registrosLista.add(registro);
 				}
 			}
