@@ -341,7 +341,7 @@ public class Main {
 						
 						// EXIBE A CONVERSÃO DO VALOR SELECIONADO
 						String valorConversao = "‖    " + valorParaConverter + " " + moedaDeOrigemSigla + " = " +
-						Double.parseDouble(conversor.getConversion_rate()) * valorParaConverter + " " + moedaDeDestinoSigla;
+						String.format("%.6f", Double.parseDouble(conversor.getConversion_rate()) * valorParaConverter) + " " + moedaDeDestinoSigla;
 						String valorComplete = caracteresParaCompletar(1, valorConversao.length());
 						
 						System.out.println(valorConversao + valorComplete + "‖");
@@ -357,7 +357,7 @@ public class Main {
 						DateTimeFormatter formatoDataHora = DateTimeFormatter.ofPattern("dd/mm/yyyy hh:mm:ss");
 						
 						String dataFormatada = dataAgora.format(formatoDataHora);
-						String registro = "[" + dataFormatada + "] " + valorParaConverter + " " + moedaDeOrigemSigla + " = " + (Double.parseDouble(conversor.getConversion_rate()) * valorParaConverter) + " " + moedaDeDestinoSigla;
+						String registro = "[" + dataFormatada + "] " + valorParaConverter + " " + moedaDeOrigemSigla + " = " + String.format("%.6f", Double.parseDouble(conversor.getConversion_rate()) * valorParaConverter) + " " + moedaDeDestinoSigla;
 
 						logger.registrarLog(registro);
 						
